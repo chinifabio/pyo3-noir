@@ -15,11 +15,8 @@ class Stream:
 class Source:
     source = None
     
-    def __init__(self, source: list ):
-        iter = NoirIter()
-        for i in source:
-            iter.push(i)
-        self.source = PySource(iter)
+    def __init__(self, path: str):
+        self.source = PySource(path)
     
 
 class StreamEnvironment:
