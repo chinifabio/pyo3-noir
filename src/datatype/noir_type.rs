@@ -1,15 +1,36 @@
 use noir::data_type::NoirType;
-use pyo3::{pyclass, pymethods};
+use pyo3::{pyclass, pymethods, IntoPy, Python, PyResult, PyObject, ToPyObject};
+
+
+pub struct PyNoirType(pub NoirType);
+
+impl IntoPy<PyObject> for PyNoirType {
+    fn into_py(self, py: Python) -> PyObject{
+        match self.0{
+            NoirType::Float32(a) => a.into_py(py),
+            _ => panic!("Not implemented yet"),
+        }
+    }
+}
+
+impl ToPyObject for PyNoirType {
+    fn to_object(&self, py: Python) -> PyObject{
+        match self.0{
+            NoirType::Float32(a) => a.into_py(py),
+            _ => panic!("Not implemented yet"),
+        }
+    }
+}
 
 
 #[pyclass]
 #[derive(Clone)]
-pub struct NoirIter {
+pub struct PyNoirIter {
     inner: Vec<NoirType>,
 }
 
 #[pymethods]
-impl NoirIter {
+impl PyNoirIter {
 
     #[new]
     pub fn new() -> Self {
@@ -26,7 +47,7 @@ impl NoirIter {
     
 }
 
-impl Iterator for NoirIter {
+impl Iterator for PyNoirIter {
     type Item = NoirType;
 
     fn next(&mut self) -> Option<Self::Item> {
