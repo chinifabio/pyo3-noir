@@ -51,6 +51,7 @@ fn pyo3_noir(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_class::<source::noir_source::PySource>()?;
     m.add_class::<stream::noir_stream::PyStream>()?;
     m.add_class::<stream::output::PyStreamOutput>()?;
+    m.add_class::<environment::config::PyEnvironmentConfig>()?;
     m.add_function(wrap_pyfunction!(reduce, m)?)?;
     Ok(())
 }

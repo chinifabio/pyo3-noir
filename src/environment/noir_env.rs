@@ -3,6 +3,7 @@ use noir::StreamEnvironment;
 
 use pyo3::{pyclass, pymethods};
 
+use crate::environment::config::PyEnvironmentConfig;
 use crate::source::noir_source::PySource;
 use crate::stream::noir_stream::PyStream;
 use crate::ENV_REGISTRY;
@@ -12,14 +13,21 @@ pub struct PyStreamEnvironment;
 
 impl Default for PyStreamEnvironment {
     fn default() -> Self {
-        Self::new()
+        Self::default()
     }
 }
 
 #[pymethods]
 impl PyStreamEnvironment {
     #[new]
-    pub fn new() -> Self {
+    pub fn new(config: PyEnvironmentConfig) -> Self {
+        let mut map = ENV_REGISTRY.lock().unwrap();
+        map.insert(0, StreamEnvironment::new(config.0));
+        PyStreamEnvironment
+    }
+
+    #[staticmethod]
+    pub fn default() -> Self {
         let mut map = ENV_REGISTRY.lock().unwrap();
         map.insert(0, StreamEnvironment::default());
         PyStreamEnvironment
