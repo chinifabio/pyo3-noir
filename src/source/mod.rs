@@ -1,1 +1,1 @@
-pub(super) mod source;
+pub(super) mod noir_source;

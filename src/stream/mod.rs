@@ -1,2 +1,2 @@
-pub(super) mod stream;
-pub(super) mod stream_self;
+pub(super) mod noir_stream;
+pub(super) mod output;

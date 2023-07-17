@@ -1,6 +1,6 @@
 
 import pyo3_noir as noir
-from pyo3_noir import PyStreamEnvironment, PyNoirIter, PySource
+from pyo3_noir import PyStreamEnvironment, PyNoirIter, PyStream, PyStreamOutput
 
 class StreamEnvironment:
     
@@ -8,31 +8,46 @@ class StreamEnvironment:
     
     def __init__(self):
         self.env = PyStreamEnvironment()
+        
+    def stream(self, src: 'IteratorSource'):
+        return Stream(self.env.stream(src.inner))
     
-    def description(self):
-        """ Return the description of the stream environment"""
-        return self.env.description()
+    def execute(self):
+        self.env.execute()
+
+class Stream:
+    inner = None
     
+    def __init__(self, stream: PyStream):
+            self.inner = stream
+    
+    def max(self):
+        return self.inner.max()
+    
+    def collect_vec(self):
+        return StreamOutput(self.inner.collect_vec())
+
+class StreamOutput:
+    inner = None
+    
+    def __init__(self, output: PyStreamOutput):
+        self.inner = output
+        
+    def get(self):
+        self.inner.get()
+
 class NoirIter:
 
-    iter = None
+    inner = None
 
     def __init__(self, data: list):
-        self.iter = PyNoirIter()
+        self.inner = PyNoirIter()
         for i in data:
-            self.iter.push(i)
+            self.inner.push(i)
         
 class IteratorSource:
-    src = None
+    inner = None
     
     def __init__(self, iter: NoirIter):
-        self.src = noir.PySource(iter.iter)
-        
-    def description(self):
-        return self.src.description()
-
-def mul(a, b):
-    return a*b
-
-if __name__ == "__main__":
-    noir.reduce(mul)
+        self.inner = noir.PySource(iter.inner)
+    
