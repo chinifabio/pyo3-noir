@@ -1,10 +1,10 @@
-use noir::prelude::IteratorSource;
+use noir::prelude::{IteratorSource, CsvSource};
 use noir::StreamEnvironment;
 
-use pyo3::{pyclass, pymethods};
+use pyo3::{pyclass, pymethods, Python};
 
 use crate::environment::config::PyEnvironmentConfig;
-use crate::source::noir_source::PySource;
+use crate::source::noir_source::{PyIteratorSource, PyCsvSource};
 use crate::stream::noir_stream::PyStream;
 use crate::ENV_REGISTRY;
 
@@ -33,7 +33,7 @@ impl PyStreamEnvironment {
         PyStreamEnvironment
     }
 
-    pub fn stream(&mut self, source: &PySource) -> PyStream {
+    pub fn iterator_stream(&mut self, source: &PyIteratorSource) -> PyStream {
         let source: IteratorSource<
             noir::data_type::NoirData,
             crate::datatype::noir_type::PyNoirIter,
@@ -44,8 +44,17 @@ impl PyStreamEnvironment {
         PyStream::new(stream)
     }
 
-    pub fn execute(&mut self) {
+    pub fn csv_stream(&mut self, path: &PyCsvSource) -> PyStream{
+        let source = CsvSource::new(path.path.clone());
+        let mut env = ENV_REGISTRY.lock().unwrap().remove(&0).unwrap();
+        let stream = env.stream(source).into_box();
+        ENV_REGISTRY.lock().unwrap().insert(0, env);
+        PyStream::new(stream)
+    }
+
+    pub fn execute(&mut self, py: Python) {
         let env = ENV_REGISTRY.lock().unwrap().remove(&0).unwrap();
-        env.execute_blocking();
+        py.allow_threads(|| env.execute_blocking());
+
     }
 }

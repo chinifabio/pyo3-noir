@@ -4,14 +4,28 @@ use crate::datatype::noir_type::PyNoirIter;
 
 #[pyclass]
 #[derive(Clone)]
-pub struct PySource {
+pub struct PyIteratorSource {
     pub iter: PyNoirIter,
 }
 
 #[pymethods]
-impl PySource {
+impl PyIteratorSource {
     #[new]
     pub fn new(iter: PyNoirIter) -> Self {
         Self { iter }
     }
 }
+
+#[pyclass]
+pub struct PyCsvSource{
+    pub path: String,
+}
+
+#[pymethods]
+impl PyCsvSource{
+    #[new]
+    pub fn new(path: String) -> Self{
+        Self{ path } 
+    }
+}
+
