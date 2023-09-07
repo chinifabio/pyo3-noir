@@ -55,6 +55,5 @@ impl PyStreamEnvironment {
     pub fn execute(&mut self, py: Python) {
         let env = ENV_REGISTRY.lock().unwrap().remove(&0).unwrap();
         py.allow_threads(|| env.execute_blocking());
-
     }
 }

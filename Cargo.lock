@@ -631,7 +631,6 @@ dependencies = [
 [[package]]
 name = "noir"
 version = "0.1.0"
-source = "git+https://github.com/CanaliDavide/noir#cdcbeb3069f7d064c25c0bde4c8d7e3ef3e0a780"
 dependencies = [
  "anyhow",
  "base64",

@@ -52,8 +52,9 @@ impl PyStream {
         let stream = map.remove(&id).unwrap();
         
         let prova = move |a,b| bynary_lamda(&closure, a, b);
-
-        map.insert(id, stream.reduce(prova).into_box());
+        
+        println!("reduce_assoc");
+        map.insert(id, stream.reduce_assoc(prova).into_box());
         
         PyStream(PyNoirHandle {
             idx: id,

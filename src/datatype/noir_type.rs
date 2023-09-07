@@ -63,15 +63,29 @@ impl ToPyObject for PyNoirData {
 
 impl FromPyObject<'_> for PyNoirData {
     fn extract(ob: &'_ PyAny) -> PyResult<Self> {
-        let data = ob.extract::<PyNoirType>()?;
-        Ok(PyNoirData(noir::data_type::NoirData::NoirType(data.0)))
+        let data = ob.extract::<PyNoirType>();
+        if data.is_err() {
+            let data = ob.extract::<Vec<PyNoirType>>()?;
+            let mut row = Vec::new();
+            for i in data {
+                row.push(i.0);
+            }
+            return Ok(PyNoirData(noir::data_type::NoirData::Row(row)))
+        }else {
+            Ok(PyNoirData(noir::data_type::NoirData::NoirType(data.unwrap().0)))
+        }
     }
 }
 
 impl FromPyObject<'_> for PyNoirType {
     fn extract(ob: &'_ PyAny) -> PyResult<Self> {
-        let data = ob.extract::<f32>()?;
-        Ok(PyNoirType(NoirType::Float32(data)))
+        let data = ob.extract::<f32>();
+        if data.is_err() {
+            let data = ob.extract::<i32>()?;
+            return Ok(PyNoirType(NoirType::Int32(data)))
+        }else{
+            Ok(PyNoirType(NoirType::Float32(data.unwrap())))
+        }
     }
 }
 
