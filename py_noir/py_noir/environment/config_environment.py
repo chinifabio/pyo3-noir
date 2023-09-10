@@ -7,6 +7,9 @@ class EnvironmentConfig:
     def __init__(self, config: PyEnvironmentConfig):
         self.config = config
     
+    def default():
+        return EnvironmentConfig(PyEnvironmentConfig.local(8))
+    
     def from_args():
         option = sys.argv[1]
         argument = sys.argv[2]
