@@ -1,11 +1,11 @@
 use std::marker::PhantomData;
 
 use noir::{box_op::BoxedOperator, data_type::NoirData, Stream};
-use pyo3::{pyclass, pymethods, Python, PyObject};
+use pyo3::{pyclass, pymethods, PyObject};
 
-use crate::{PyNoirHandle, STREAM_REGISTRY, datatype::noir_type::PyNoirData};
+use crate::{PyNoirHandle, STREAM_REGISTRY};
 
-use super::output::PyStreamOutput;
+use super::{output::PyStreamOutput, utils::{binary_lamda, binary_batch_lamda}};
 
 type MyStream = Stream<NoirData, BoxedOperator<NoirData>>;
 #[pyclass]
@@ -20,17 +20,6 @@ impl PyStream {
             _marker: PhantomData,
         })
     }
-}
-
-pub fn bynary_lamda(    
-    lambda: &PyObject,
-    a: NoirData,
-    b: NoirData,
-) -> NoirData {
-    Python::with_gil(|py| {
-        let args = (PyNoirData(a), PyNoirData(b));
-        lambda.call1(py, args).unwrap().extract::<PyNoirData>(py).unwrap().0
-    })
 }
 
 #[pymethods]
@@ -51,10 +40,54 @@ impl PyStream {
         let mut map = STREAM_REGISTRY.lock().unwrap();
         let stream = map.remove(&id).unwrap();
         
-        let prova = move |a,b| bynary_lamda(&closure, a, b);
+        let prova = move |a,b| binary_lamda(&closure, a, b);
         
-        println!("reduce_assoc");
+        map.insert(id, stream.reduce(prova).into_box());
+        
+        PyStream(PyNoirHandle {
+            idx: id,
+            _marker: PhantomData,
+        })
+    }
+
+    pub fn reduce_assoc(&mut self, closure: PyObject) -> Self {
+        let id = self.0.idx;
+        let mut map = STREAM_REGISTRY.lock().unwrap();
+        let stream = map.remove(&id).unwrap();
+        
+        let prova = move |a,b| binary_lamda(&closure, a, b);
+        
         map.insert(id, stream.reduce_assoc(prova).into_box());
+        
+        PyStream(PyNoirHandle {
+            idx: id,
+            _marker: PhantomData,
+        })
+    }
+
+    pub fn reduce_batch(&mut self, closure: PyObject, batch_size: usize) -> Self {
+        let id = self.0.idx;
+        let mut map = STREAM_REGISTRY.lock().unwrap();
+        let stream = map.remove(&id).unwrap();
+        
+        let prova = move |a,b| binary_batch_lamda(&closure, a, b);
+        
+        map.insert(id, stream.reduce_batch(prova, batch_size).into_box());
+        
+        PyStream(PyNoirHandle {
+            idx: id,
+            _marker: PhantomData,
+        })
+    }
+
+    pub fn reduce_batch_assoc(&mut self, closure: PyObject, local_batch_size: usize, global_batch_size: usize) -> Self {
+        let id = self.0.idx;
+        let mut map = STREAM_REGISTRY.lock().unwrap();
+        let stream = map.remove(&id).unwrap();
+        
+        let prova = move |a,b| binary_batch_lamda(&closure, a, b);
+        
+        map.insert(id, stream.reduce_batch_assoc(prova, local_batch_size, global_batch_size).into_box());
         
         PyStream(PyNoirHandle {
             idx: id,

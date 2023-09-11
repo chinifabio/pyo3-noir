@@ -1,8 +1,8 @@
 from pyo3_noir import PyStreamEnvironment
-from py_noir.environment.config_environment import EnvironmentConfig
-from py_noir.source.csv_source import CsvSource
-from py_noir.source.iterator_source import IteratorSource
-from py_noir.stream.noir_stream import Stream
+from noir.environment.config_environment import EnvironmentConfig
+from noir.source.csv_source import CsvSource
+from noir.source.iterator_source import IteratorSource
+from noir.stream.noir_stream import Stream
 
 class StreamEnvironment:
     
