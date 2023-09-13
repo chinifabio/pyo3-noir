@@ -69,7 +69,7 @@ impl PyStream {
         let id = self.0.idx;
         let mut map = STREAM_REGISTRY.lock().unwrap();
         let stream = map.remove(&id).unwrap();
-        
+
         let prova = move |a,b| binary_batch_lamda(&closure, a, b);
         
         map.insert(id, stream.reduce_batch(prova, batch_size).into_box());

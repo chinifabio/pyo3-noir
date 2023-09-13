@@ -2,6 +2,13 @@ from pyo3_noir import PyStream
 from noir.output.stream_output import StreamOutput
 from collections.abc import Callable
 
+def vectorize_fn(fn: Callable):
+  def func(a, vec):
+    for x in vec:
+        a = fn(a, x)
+    return a
+  return func
+
 class Stream:
     inner = None
     
@@ -17,8 +24,9 @@ class Stream:
     def reduce_assoc(self, func: Callable) -> 'Stream':
         return self.inner.reduce_assoc(func)
     
-    def reduce_batch(self, func: Callable, batch_size: int) -> 'Stream':
-        return self.inner.reduce_batch(func, batch_size)
+    def reduce_batch(self, fn: Callable, batch_size: int) -> 'Stream':
+        reduce = vectorize_fn(fn)
+        return self.inner.reduce_batch(reduce, batch_size)
     
     def reduce_batch_assoc(self, func: Callable, local_batch_size: int, global_batch_size: int) -> 'Stream':
         return self.inner.reduce_batch_assoc(func, local_batch_size, global_batch_size)
