@@ -49,6 +49,17 @@ impl PyStream {
         })
     }
 
+    pub fn min(&mut self, skip_nan: bool) -> Self{
+        let id = self.0.idx;
+        let mut map = STREAM_REGISTRY.lock().unwrap();
+        let stream = map.remove(&id).unwrap();
+        map.insert(id, stream.min_noir_data(skip_nan).into_box());
+        PyStream(PyNoirHandle {
+            idx: id,
+            _marker: PhantomData,
+        })
+    }
+
     pub fn max(&mut self, skip_nan: bool) -> Self {
         let id = self.0.idx;
         let mut map = STREAM_REGISTRY.lock().unwrap();

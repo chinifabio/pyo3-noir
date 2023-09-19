@@ -21,6 +21,9 @@ class Stream:
     def mean(self, skip_nan: bool) -> 'Stream':
         return Stream(self.inner.mean(skip_nan))
     
+    def min(self, skip_nan: bool) -> 'Stream':
+        return Stream(self.inner.min(skip_nan))
+
     def max(self, skip_nan: bool) -> 'Stream':
         return Stream(self.inner.max(skip_nan))
     

@@ -10,9 +10,9 @@ env3 = StreamEnvironment(config3)
 csv_src3 = CsvSource("data.csv")
 iterator = [[1.0, 3.0], ["", 6.0], [7.0, 3.0]]
 iterator2 = [1.0, 2.0, 3.0]
-iter_sorce = IteratorSource(iterator)
+iter_sorce = IteratorSource(iterator2)
 str = env3.iterator_stream(iter_sorce)
-max = str.median(True)
+max = str.min(True)
 res3 = max.collect_vec()
 env3.execute()
 print(res3.get_result()[0])
