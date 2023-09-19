@@ -1,18 +1,20 @@
+use noir::data_type::NoirData;
 use pyo3::{pyclass, pymethods};
-
-use crate::datatype::noir_type::PyNoirIter;
+use crate::datatype::noir_data::PyNoirData;
 
 #[pyclass]
 #[derive(Clone)]
 pub struct PyIteratorSource {
-    pub iter: PyNoirIter,
+    pub iter: Vec<NoirData>,
 }
 
 #[pymethods]
 impl PyIteratorSource {
     #[new]
-    pub fn new(iter: PyNoirIter) -> Self {
-        Self { iter }
+    pub fn new(iter: Vec<PyNoirData>) -> Self {
+        iter.iter().for_each(|x| println!("{:?}", x));
+        let a = iter.into_iter().map(|x| x.0).collect();
+        Self { iter: a }
     }
 }
 

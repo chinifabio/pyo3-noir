@@ -1,7 +1,7 @@
 use noir::{data_type::NoirData, prelude::StreamOutput};
 use pyo3::{pyclass, pymethods};
 
-use crate::{datatype::noir_type::PyNoirData, PyNoirHandle, OUT_REGISTRY};
+use crate::{datatype::noir_data::PyNoirData, PyNoirHandle, OUT_REGISTRY};
 
 #[pyclass]
 pub struct PyStreamOutput(PyNoirHandle<StreamOutput<Vec<NoirData>>>);

@@ -33,11 +33,8 @@ impl PyStreamEnvironment {
         PyStreamEnvironment
     }
 
-    pub fn iterator_stream(&mut self, source: &PyIteratorSource) -> PyStream {
-        let source: IteratorSource<
-            noir::data_type::NoirData,
-            crate::datatype::noir_type::PyNoirIter,
-        > = IteratorSource::new(source.iter.clone());
+    pub fn iterator_stream(&mut self, source: PyIteratorSource) -> PyStream {
+        let source = IteratorSource::new(source.iter.into_iter());
         let mut env = ENV_REGISTRY.lock().unwrap().remove(&0).unwrap();
         let stream = env.stream(source).into_box();
         ENV_REGISTRY.lock().unwrap().insert(0, env);

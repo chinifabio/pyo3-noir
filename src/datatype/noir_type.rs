@@ -1,13 +1,11 @@
-use noir::data_type::{NoirData, NoirType};
-use pyo3::{pyclass, pymethods, IntoPy, PyObject, Python, ToPyObject, FromPyObject, PyAny, PyResult};
+
+use noir::data_type::NoirType;
+use pyo3::{IntoPy, PyObject, Python, ToPyObject, FromPyObject, PyAny, PyResult};
 
 
 #[repr(transparent)]
 pub struct PyNoirType(pub NoirType);
 
-#[repr(transparent)]
-#[derive(Clone)]
-pub struct PyNoirData(pub NoirData);
 
 impl IntoPy<PyObject> for PyNoirType {
     fn into_py(self, py: Python) -> PyObject {
@@ -31,92 +29,18 @@ impl ToPyObject for PyNoirType {
     }
 }
 
-impl IntoPy<PyObject> for PyNoirData {
-    fn into_py(self, py: Python) -> PyObject {
-        match self.0 {
-            NoirData::NoirType(a) => PyNoirType(a).into_py(py),
-            NoirData::Row(a) => {
-                let mut row = Vec::new();
-                for i in a {
-                    row.push(PyNoirType(i));
-                }
-                row.into_py(py)
-            },
-        }
-    }
-}
-
-impl ToPyObject for PyNoirData {
-    fn to_object(&self, py: Python) -> PyObject {
-        match &self.0 {
-            NoirData::NoirType(a) => PyNoirType(a.clone()).into_py(py),
-            NoirData::Row(a) => {
-                let mut row = Vec::new();
-                for i in a {
-                    row.push(PyNoirType(i.clone()));
-                }
-                row.into_py(py)
-            },
-        }
-    }
-}
-
-impl FromPyObject<'_> for PyNoirData {
-    fn extract(ob: &'_ PyAny) -> PyResult<Self> {
-        let data = ob.extract::<PyNoirType>();
-        if data.is_err() {
-            let data = ob.extract::<Vec<PyNoirType>>()?;
-            let mut row = Vec::new();
-            for i in data {
-                row.push(i.0);
-            }
-            return Ok(PyNoirData(noir::data_type::NoirData::Row(row)))
-        }else {
-            Ok(PyNoirData(noir::data_type::NoirData::NoirType(data.unwrap().0)))
-        }
-    }
-}
-
 impl FromPyObject<'_> for PyNoirType {
     fn extract(ob: &'_ PyAny) -> PyResult<Self> {
         let data = ob.extract::<f32>();
         if data.is_err() {
-            let data = ob.extract::<i32>()?;
-            return Ok(PyNoirType(NoirType::Int32(data)))
+            let data = ob.extract::<i32>();
+            if data.is_err() {
+                return Ok(PyNoirType(NoirType::NaN()));
+            }else{
+                return Ok(PyNoirType(NoirType::Int32(data.unwrap())))
+            }
         }else{
             Ok(PyNoirType(NoirType::Float32(data.unwrap())))
         }
-    }
-}
-
-#[pyclass]
-#[derive(Clone)]
-pub struct PyNoirIter {
-    inner: Vec<NoirData>,
-}
-
-#[pymethods]
-impl PyNoirIter {
-    #[new]
-    pub fn new() -> Self {
-        Self { inner: Vec::new() }
-    }
-
-    pub fn push(&mut self, item: f32) {
-        self.inner.push(NoirData::NoirType(NoirType::Float32(item)));
-    }
-}
-
-impl Default for PyNoirIter {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-impl Iterator for PyNoirIter {
-    type Item = NoirData;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        self.inner.pop()
     }
 }

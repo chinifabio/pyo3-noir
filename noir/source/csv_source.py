@@ -1,4 +1,4 @@
-from pyo3_noir import PyCsvSource
+from noir.noir import PyCsvSource
 
 
 class CsvSource:

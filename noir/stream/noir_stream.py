@@ -1,4 +1,4 @@
-from pyo3_noir import PyStream
+from noir.noir import PyStream
 from noir.output.stream_output import StreamOutput
 from collections.abc import Callable
 
@@ -14,22 +14,28 @@ class Stream:
     
     def __init__(self, stream: PyStream):
             self.inner = stream
+
+    def median(self, skip_nan: bool) -> 'Stream':
+        return Stream(self.inner.median_exact(skip_nan))
     
-    def max(self) -> 'Stream':
-        return self.inner.max()
+    def mean(self, skip_nan: bool) -> 'Stream':
+        return Stream(self.inner.mean(skip_nan))
+    
+    def max(self, skip_nan: bool) -> 'Stream':
+        return Stream(self.inner.max(skip_nan))
     
     def reduce(self, func: Callable) -> 'Stream':
-        return self.inner.reduce(func)
+        return Stream(self.inner.reduce(func))
     
     def reduce_assoc(self, func: Callable) -> 'Stream':
-        return self.inner.reduce_assoc(func)
+        return Stream(self.inner.reduce_assoc(func))
     
     def reduce_batch(self, fn: Callable, batch_size: int) -> 'Stream':
         reduce = vectorize_fn(fn)
-        return self.inner.reduce_batch(reduce, batch_size)
+        return Stream(self.inner.reduce_batch(reduce, batch_size))
     
     def reduce_batch_assoc(self, func: Callable, local_batch_size: int, global_batch_size: int) -> 'Stream':
-        return self.inner.reduce_batch_assoc(func, local_batch_size, global_batch_size)
+        return Stream(self.inner.reduce_batch_assoc(func, local_batch_size, global_batch_size))
     
     def collect_vec(self) -> StreamOutput:
         return StreamOutput(self.inner.collect_vec())

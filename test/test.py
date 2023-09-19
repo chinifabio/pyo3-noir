@@ -1,6 +1,6 @@
 from noir import *
 
-def closure(a, b):
+def closure(a: NoirData, b: NoirData):
     n_0 = a[0] - b[0]
     n_1 = a[1] + b[1]
     return [n_0, n_1]
@@ -8,6 +8,11 @@ def closure(a, b):
 config3 = EnvironmentConfig.default()
 env3 = StreamEnvironment(config3)
 csv_src3 = CsvSource("data.csv")
-res3 = env3.csv_stream(csv_src3).reduce_batch(closure, 4).collect_vec()
+iterator = [[1.0, 3.0], ["", 6.0], [7.0, 3.0]]
+iterator2 = [1.0, 2.0, 3.0]
+iter_sorce = IteratorSource(iterator)
+str = env3.iterator_stream(iter_sorce)
+max = str.median(True)
+res3 = max.collect_vec()
 env3.execute()
-print("reduce_batch {}".format(res3.get()))
+print(res3.get_result()[0])

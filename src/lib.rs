@@ -35,13 +35,14 @@ pub struct PyNoirHandle<T> {
 
 /// A Python module implemented in Rust.
 #[pymodule]
+#[pyo3(name = "noir")]
 fn pyo3_noir(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_class::<PyStreamEnvironment>()?;
-    m.add_class::<datatype::noir_type::PyNoirIter>()?;
     m.add_class::<source::noir_source::PyIteratorSource>()?;
     m.add_class::<source::noir_source::PyCsvSource>()?;
     m.add_class::<stream::noir_stream::PyStream>()?;
     m.add_class::<stream::output::PyStreamOutput>()?;
     m.add_class::<environment::config::PyEnvironmentConfig>()?;
+    m.add_class::<datatype::noir_data::PyNoirData>()?;
     Ok(())
 }

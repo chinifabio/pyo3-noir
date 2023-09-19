@@ -1,5 +1,5 @@
 import sys
-from pyo3_noir import PyEnvironmentConfig
+from noir.noir import PyEnvironmentConfig
 
 class EnvironmentConfig:
     config = None

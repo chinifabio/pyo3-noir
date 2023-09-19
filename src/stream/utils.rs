@@ -1,6 +1,6 @@
 use noir::data_type::NoirData;
 use pyo3::{PyObject, Python, types::PyList};
-use crate::datatype::noir_type::PyNoirData;
+use crate::datatype::noir_data::PyNoirData;
 
 pub fn binary_lamda(    
     lambda: &PyObject,
