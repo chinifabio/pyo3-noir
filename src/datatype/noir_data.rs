@@ -1,13 +1,14 @@
 use noir::data_type::NoirData;
-use pyo3::{Python, PyObject, types::PyList, IntoPy, ToPyObject, PyResult, PyAny, FromPyObject, AsPyPointer, pymethods};
+use pyo3::{
+    pymethods, types::PyList, AsPyPointer, FromPyObject, IntoPy, PyAny, PyObject, PyResult, Python,
+    ToPyObject,
+};
 
 use super::noir_type::PyNoirType;
-
 
 #[repr(transparent)]
 #[derive(Debug)]
 pub struct PyNoirData(pub NoirData);
-
 
 #[pymethods]
 impl PyNoirData {
@@ -15,16 +16,16 @@ impl PyNoirData {
     pub fn new(columns: Vec<PyNoirType>) -> Self {
         if columns.is_empty() {
             Self(NoirData::new_empty())
-        }else{
+        } else {
             Self(NoirData::new(columns.into_iter().map(|x| x.0).collect()))
         }
     }
 
-    fn __repr__(&self) -> String{
+    fn __repr__(&self) -> String {
         format!("NoirData: {}", self.0)
     }
 
-    fn __str__(&self) -> String{
+    fn __str__(&self) -> String {
         format!("{}", self.0)
     }
 
@@ -32,7 +33,7 @@ impl PyNoirData {
         self.0.len()
     }
 
-    pub fn is_empty(&self) -> bool{
+    pub fn is_empty(&self) -> bool {
         self.0.is_empty()
     }
 }
@@ -64,17 +65,15 @@ impl pyo3::impl_::pyclass::PyClassImpl for PyNoirData {
         PyClassItemsIter::new(
             &INTRINSIC_ITEMS,
             ::std::boxed::Box::new(::std::iter::Iterator::map(
-                pyo3::inventory::iter::<<Self as pyo3::impl_::pyclass::PyClassImpl>::Inventory>(
-                ),
+                pyo3::inventory::iter::<<Self as pyo3::impl_::pyclass::PyClassImpl>::Inventory>(),
                 pyo3::impl_::pyclass::PyClassInventory::items,
             )),
         )
     }
     fn doc(py: pyo3::Python<'_>) -> pyo3::PyResult<&'static ::std::ffi::CStr> {
         use pyo3::impl_::pyclass::*;
-        static DOC: pyo3::once_cell::GILOnceCell<
-            ::std::borrow::Cow<'static, ::std::ffi::CStr>,
-        > = pyo3::once_cell::GILOnceCell::new();
+        static DOC: pyo3::once_cell::GILOnceCell<::std::borrow::Cow<'static, ::std::ffi::CStr>> =
+            pyo3::once_cell::GILOnceCell::new();
         DOC.get_or_try_init(py, || {
             let collector = PyClassImplCollector::<Self>::new();
             build_pyclass_doc(
@@ -132,7 +131,9 @@ unsafe impl pyo3::type_object::PyTypeInfo for PyNoirData {
     }
 
     fn is_type_of(object: &PyAny) -> bool {
-        unsafe { pyo3::ffi::PyObject_TypeCheck(object.as_ptr(), Self::type_object_raw(object.py())) != 0 }
+        unsafe {
+            pyo3::ffi::PyObject_TypeCheck(object.as_ptr(), Self::type_object_raw(object.py())) != 0
+        }
     }
 
     fn is_exact_type_of(object: &PyAny) -> bool {
@@ -140,43 +141,34 @@ unsafe impl pyo3::type_object::PyTypeInfo for PyNoirData {
     }
 }
 
-
 impl IntoPy<PyObject> for PyNoirData {
     fn into_py(self, py: Python) -> PyObject {
         match self.0 {
             NoirData::NoirType(a) => PyNoirType(a).into_py(py),
-            NoirData::Row(a) => {
-                PyList::new(py, a.into_iter().map(PyNoirType)).into()
-            },
+            NoirData::Row(a) => PyList::new(py, a.into_iter().map(PyNoirType)).into(),
         }
     }
 }
-
 
 impl ToPyObject for PyNoirData {
     fn to_object(&self, py: Python) -> PyObject {
         match &self.0 {
-            NoirData::NoirType(a) => PyNoirType(a.clone()).into_py(py),
-            NoirData::Row(a) => {
-                PyList::new(py, a.into_iter().map(|x| PyNoirType(*x))).into()
-            }
+            NoirData::NoirType(a) => PyNoirType(*a).into_py(py),
+            NoirData::Row(a) => PyList::new(py, a.iter().map(|x| PyNoirType(*x))).into(),
         }
     }
 }
-
 
 impl FromPyObject<'_> for PyNoirData {
     fn extract(ob: &'_ PyAny) -> PyResult<Self> {
         let data = ob.extract::<Vec<PyNoirType>>();
         if data.is_err() {
             let data = ob.extract::<PyNoirType>()?;
-            return Ok(PyNoirData(noir::data_type::NoirData::NoirType(data.0)))
-        }else {
+            Ok(PyNoirData(noir::data_type::NoirData::NoirType(data.0)))
+        } else {
             let data = data?;
             let row = Vec::from_iter(data.into_iter().map(|x| x.0));
-            return Ok(PyNoirData(noir::data_type::NoirData::Row(row)))
+            Ok(PyNoirData(noir::data_type::NoirData::Row(row)))
         }
     }
 }
-
-

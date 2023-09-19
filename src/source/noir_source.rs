@@ -1,6 +1,6 @@
+use crate::datatype::noir_data::PyNoirData;
 use noir::data_type::NoirData;
 use pyo3::{pyclass, pymethods};
-use crate::datatype::noir_data::PyNoirData;
 
 #[pyclass]
 #[derive(Clone)]
@@ -19,15 +19,14 @@ impl PyIteratorSource {
 }
 
 #[pyclass]
-pub struct PyCsvSource{
+pub struct PyCsvSource {
     pub path: String,
 }
 
 #[pymethods]
-impl PyCsvSource{
+impl PyCsvSource {
     #[new]
-    pub fn new(path: String) -> Self{
-        Self{ path } 
+    pub fn new(path: String) -> Self {
+        Self { path }
     }
 }
-

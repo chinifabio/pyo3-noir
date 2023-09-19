@@ -1,6 +1,6 @@
 use noir::prelude::StreamOutput;
-use noir::StreamEnvironment;
 use noir::Stream;
+use noir::StreamEnvironment;
 use once_cell::sync::Lazy;
 use pyo3::prelude::*;
 
@@ -12,7 +12,6 @@ mod stream;
 use std::{collections::HashMap, sync::Mutex};
 
 use environment::noir_env::PyStreamEnvironment;
-
 
 use noir::box_op::BoxedOperator;
 use noir::data_type::NoirData;
