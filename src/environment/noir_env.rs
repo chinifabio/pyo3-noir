@@ -1,4 +1,4 @@
-use noir::prelude::{CsvSource, IteratorSource};
+use noir::prelude::{IteratorSource, RowCsvSource};
 use noir::StreamEnvironment;
 
 use pyo3::{pyclass, pymethods, Python};
@@ -42,7 +42,7 @@ impl PyStreamEnvironment {
     }
 
     pub fn csv_stream(&mut self, path: &PyCsvSource) -> PyStream {
-        let source = CsvSource::new(path.path.clone());
+        let source = RowCsvSource::new(path.path.clone());
         let mut env = ENV_REGISTRY.lock().unwrap().remove(&0).unwrap();
         let stream = env.stream(source).into_box();
         ENV_REGISTRY.lock().unwrap().insert(0, env);

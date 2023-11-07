@@ -8,6 +8,11 @@ class StreamEnvironment:
     
     env = None
     
+    """
+    Streaming environment from which it's possible to register new streams and start the computation.
+
+    This is the entrypoint for the library: construct an environment providing an EnvironmentConfig, then you can ask new streams providing the source from where to read from.
+    """
     def __init__(self, env_conf: EnvironmentConfig):
         self.env = PyStreamEnvironment(env_conf.config)
         

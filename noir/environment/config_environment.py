@@ -10,6 +10,11 @@ class EnvironmentConfig:
     def default():
         return EnvironmentConfig(PyEnvironmentConfig.local(8))
     
+    """
+    Create a local or remote environment configuration from command line arguments.
+    -l n : Create a local environment with n threads.
+    -r file : Create a remote environment with the given YAML file.
+    """
     def from_args():
         option = sys.argv[1]
         argument = sys.argv[2]

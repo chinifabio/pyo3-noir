@@ -31,7 +31,7 @@ impl PyStream {
         let id = self.0.idx;
         let mut map = STREAM_REGISTRY.lock().unwrap();
         let stream = map.remove(&id).unwrap();
-        map.insert(id, stream.median_noir_data(skip_nan).into_box());
+        map.insert(id, stream.quantile_exact(0.5, skip_nan).into_box());
         PyStream(PyNoirHandle {
             idx: id,
             _marker: PhantomData,
