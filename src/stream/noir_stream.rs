@@ -11,6 +11,7 @@ use super::{
 };
 
 type MyStream = Stream<NoirData, BoxedOperator<NoirData>>;
+
 #[pyclass]
 pub struct PyStream(PyNoirHandle<MyStream>);
 
@@ -25,13 +26,37 @@ impl PyStream {
     }
 }
 
+/**
+ * Methods that will be exposed to Python.
+ * All the methods should have the following structure:
+ * 
+ * 1. Remove the struct from the registry using the index in the handle.
+ * 2. Perform preliminar operations if needed before calling the method on the stream. (e.g. create the closure from PyObject)
+ * 3. Call the method on the stream and insert the new stream in the registry.
+ * 4. Return a new handle.
+ */
 #[pymethods]
 impl PyStream {
     pub fn median_exact(&mut self, skip_nan: bool) -> Self {
         let id = self.0.idx;
         let mut map = STREAM_REGISTRY.lock().unwrap();
         let stream = map.remove(&id).unwrap();
+        
         map.insert(id, stream.quantile_exact(0.5, skip_nan).into_box());
+        
+        PyStream(PyNoirHandle {
+            idx: id,
+            _marker: PhantomData,
+        })
+    }
+
+    pub fn drop_none(&mut self) -> Self {
+        let id = self.0.idx;
+        let mut map = STREAM_REGISTRY.lock().unwrap();
+        let stream = map.remove(&id).unwrap();
+        
+        map.insert(id, stream.drop_none().into_box());
+        
         PyStream(PyNoirHandle {
             idx: id,
             _marker: PhantomData,
@@ -42,18 +67,22 @@ impl PyStream {
         let id = self.0.idx;
         let mut map = STREAM_REGISTRY.lock().unwrap();
         let stream = map.remove(&id).unwrap();
+        
         map.insert(id, stream.mean_noir_data(skip_nan).into_box());
+        
         PyStream(PyNoirHandle {
             idx: id,
             _marker: PhantomData,
         })
     }
 
-    pub fn min(&mut self, skip_nan: bool) -> Self{
+    pub fn min(&mut self, skip_nan: bool) -> Self {
         let id = self.0.idx;
         let mut map = STREAM_REGISTRY.lock().unwrap();
         let stream = map.remove(&id).unwrap();
+        
         map.insert(id, stream.min_noir_data(skip_nan).into_box());
+        
         PyStream(PyNoirHandle {
             idx: id,
             _marker: PhantomData,
@@ -64,7 +93,9 @@ impl PyStream {
         let id = self.0.idx;
         let mut map = STREAM_REGISTRY.lock().unwrap();
         let stream = map.remove(&id).unwrap();
+        
         map.insert(id, stream.max_noir_data(skip_nan).into_box());
+        
         PyStream(PyNoirHandle {
             idx: id,
             _marker: PhantomData,
@@ -76,9 +107,9 @@ impl PyStream {
         let mut map = STREAM_REGISTRY.lock().unwrap();
         let stream = map.remove(&id).unwrap();
 
-        let prova = move |a, b| binary_lamda(&closure, a, b);
+        let func = move |a, b| binary_lamda(&closure, a, b);
 
-        map.insert(id, stream.reduce(prova).into_box());
+        map.insert(id, stream.reduce(func).into_box());
 
         PyStream(PyNoirHandle {
             idx: id,
@@ -86,14 +117,18 @@ impl PyStream {
         })
     }
 
+    /**
+     * Used only for testing purposes.
+     * Untill the Python closure needs the GIL it's not possible to perform any parallelism.
+     */
     pub fn reduce_assoc(&mut self, closure: PyObject) -> Self {
         let id = self.0.idx;
         let mut map = STREAM_REGISTRY.lock().unwrap();
         let stream = map.remove(&id).unwrap();
 
-        let prova = move |a, b| binary_lamda(&closure, a, b);
+        let func = move |a, b| binary_lamda(&closure, a, b);
 
-        map.insert(id, stream.reduce_assoc(prova).into_box());
+        map.insert(id, stream.reduce_assoc(func).into_box());
 
         PyStream(PyNoirHandle {
             idx: id,
@@ -106,9 +141,9 @@ impl PyStream {
         let mut map = STREAM_REGISTRY.lock().unwrap();
         let stream = map.remove(&id).unwrap();
 
-        let prova = move |a, b| binary_batch_lamda(&closure, a, b);
+        let func = move |a, b| binary_batch_lamda(&closure, a, b);
 
-        map.insert(id, stream.reduce_batch(prova, batch_size).into_box());
+        map.insert(id, stream.reduce_batch(func, batch_size).into_box());
 
         PyStream(PyNoirHandle {
             idx: id,
@@ -116,6 +151,10 @@ impl PyStream {
         })
     }
 
+    /**
+     * Used only for testing purposes.
+     * Untill the Python closure needs the GIL it's not possible to perform any parallelism.
+     */
     pub fn reduce_batch_assoc(
         &mut self,
         closure: PyObject,
@@ -126,12 +165,12 @@ impl PyStream {
         let mut map = STREAM_REGISTRY.lock().unwrap();
         let stream = map.remove(&id).unwrap();
 
-        let prova = move |a, b| binary_batch_lamda(&closure, a, b);
+        let func = move |a, b| binary_batch_lamda(&closure, a, b);
 
         map.insert(
             id,
             stream
-                .reduce_batch_assoc(prova, local_batch_size, global_batch_size)
+                .reduce_batch_assoc(func, local_batch_size, global_batch_size)
                 .into_box(),
         );
 
@@ -145,6 +184,7 @@ impl PyStream {
         let id = self.0.idx;
         let mut map = STREAM_REGISTRY.lock().unwrap();
         let stream = map.remove(&id).unwrap();
+        
         PyStreamOutput::new(stream.collect_vec())
     }
 }

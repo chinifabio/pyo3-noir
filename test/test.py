@@ -1,9 +1,11 @@
 from noir import *
+import polars as pl
 
 def closure(a: NoirData, b: NoirData):
     n_0 = a[0] - b[0]
     n_1 = a[1] + b[1]
     return [n_0, n_1]
+
 
 config = EnvironmentConfig.from_args()
 env = StreamEnvironment(config)

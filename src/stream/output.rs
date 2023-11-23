@@ -23,6 +23,7 @@ impl PyStreamOutput {
         let id = self.0.idx;
         let mut map = OUT_REGISTRY.lock().unwrap();
         let output = map.remove(&id).unwrap();
+        
         output.get().unwrap().into_iter().map(PyNoirData).collect()
     }
 }

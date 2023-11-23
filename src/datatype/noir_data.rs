@@ -38,6 +38,13 @@ impl PyNoirData {
     }
 }
 
+
+/**
+ * -------------------------------------------------------------------
+ * Implementations copied from pyo3 derive macros.
+ */
+
+
 impl pyo3::PyClass for PyNoirData {
     type Frozen = pyo3::pyclass::boolean_struct::False;
 }
@@ -140,6 +147,12 @@ unsafe impl pyo3::type_object::PyTypeInfo for PyNoirData {
         unsafe { pyo3::ffi::Py_TYPE(object.as_ptr()) == Self::type_object_raw(object.py()) }
     }
 }
+
+
+/**
+ * ---------------------------------------------------------------------
+ * Custom implementations for sending and receiving data from Python.
+ */
 
 impl IntoPy<PyObject> for PyNoirData {
     fn into_py(self, py: Python) -> PyObject {

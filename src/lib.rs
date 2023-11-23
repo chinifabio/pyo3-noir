@@ -26,6 +26,12 @@ static ENV_REGISTRY: Lazy<Mutex<HashMap<usize, StreamEnvironment>>> =
 
 static OUT_REGISTRY: Lazy<Mutex<HashMap<usize, StreamOutput<Vec<NoirData>>>>> =
     Lazy::new(|| Mutex::new(HashMap::new()));
+
+
+///
+/// This is a handle to a Python object that is stored in the registry.
+/// It is used to keep track of the object's index in the registry.
+///
 #[derive(Clone)]
 pub struct PyNoirHandle<T> {
     idx: usize,

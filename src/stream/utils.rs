@@ -2,6 +2,7 @@ use crate::datatype::noir_data::PyNoirData;
 use noir::data_type::NoirData;
 use pyo3::{types::PyList, PyObject, Python};
 
+
 pub fn binary_lamda(lambda: &PyObject, a: NoirData, b: NoirData) -> NoirData {
     Python::with_gil(|py| {
         let args = (PyNoirData(a), PyNoirData(b));
@@ -13,6 +14,7 @@ pub fn binary_lamda(lambda: &PyObject, a: NoirData, b: NoirData) -> NoirData {
             .0
     })
 }
+
 
 pub fn binary_batch_lamda(lambda: &PyObject, a: NoirData, b: Vec<NoirData>) -> NoirData {
     Python::with_gil(|py| {
