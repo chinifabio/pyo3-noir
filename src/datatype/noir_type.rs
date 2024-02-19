@@ -1,4 +1,4 @@
-use noir::data_type::NoirType;
+use noir_compute::data_type::noir_type::NoirType;
 use pyo3::{FromPyObject, IntoPy, PyAny, PyObject, PyResult, Python, ToPyObject};
 
 #[repr(transparent)]
@@ -11,6 +11,7 @@ impl IntoPy<PyObject> for PyNoirType {
             NoirType::Int32(a) => a.into_py(py),
             NoirType::None() => py.None(),
             NoirType::NaN() => f32::NAN.into_py(py),
+            NoirType::Bool(a) => a.into_py(py),
         }
     }
 }
@@ -22,6 +23,7 @@ impl ToPyObject for PyNoirType {
             NoirType::Int32(a) => a.into_py(py),
             NoirType::None() => py.None(),
             NoirType::NaN() => f32::NAN.into_py(py),
+            NoirType::Bool(a) => a.into_py(py),
         }
     }
 }

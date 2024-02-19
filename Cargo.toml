@@ -10,7 +10,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 indexmap = "2.0.0"
-noir = { git = "https://github.com/CanaliDavide/noir" }
+noir-compute = { path = "../noir" }
 once_cell = "1.18.0"
 pprof =  { version = "0.12.1", features = ["flamegraph"] }
 pyo3 = { version = "0.19", features = ["abi3-py37", "extension-module", "multiple-pymethods"] }

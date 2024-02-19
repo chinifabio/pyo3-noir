@@ -1,6 +1,6 @@
 use std::marker::PhantomData;
 
-use noir::{box_op::BoxedOperator, data_type::NoirData, Stream};
+use noir_compute::{box_op::BoxedOperator, data_type::noir_data::NoirData, Stream};
 use pyo3::{pyclass, pymethods, PyObject};
 
 use crate::{PyNoirHandle, STREAM_REGISTRY};
@@ -10,7 +10,7 @@ use super::{
     utils::{binary_batch_lamda, binary_lamda},
 };
 
-type MyStream = Stream<NoirData, BoxedOperator<NoirData>>;
+type MyStream = Stream<BoxedOperator<NoirData>>;
 
 #[pyclass]
 pub struct PyStream(PyNoirHandle<MyStream>);
@@ -29,7 +29,7 @@ impl PyStream {
 /**
  * Methods that will be exposed to Python.
  * All the methods should have the following structure:
- * 
+ *
  * 1. Remove the struct from the registry using the index in the handle.
  * 2. Perform preliminar operations if needed before calling the method on the stream. (e.g. create the closure from PyObject)
  * 3. Call the method on the stream and insert the new stream in the registry.
@@ -41,9 +41,9 @@ impl PyStream {
         let id = self.0.idx;
         let mut map = STREAM_REGISTRY.lock().unwrap();
         let stream = map.remove(&id).unwrap();
-        
+
         map.insert(id, stream.quantile_exact(0.5, skip_nan).into_box());
-        
+
         PyStream(PyNoirHandle {
             idx: id,
             _marker: PhantomData,
@@ -54,9 +54,9 @@ impl PyStream {
         let id = self.0.idx;
         let mut map = STREAM_REGISTRY.lock().unwrap();
         let stream = map.remove(&id).unwrap();
-        
+
         map.insert(id, stream.drop_none().into_box());
-        
+
         PyStream(PyNoirHandle {
             idx: id,
             _marker: PhantomData,
@@ -67,9 +67,9 @@ impl PyStream {
         let id = self.0.idx;
         let mut map = STREAM_REGISTRY.lock().unwrap();
         let stream = map.remove(&id).unwrap();
-        
+
         map.insert(id, stream.mean_noir_data(skip_nan).into_box());
-        
+
         PyStream(PyNoirHandle {
             idx: id,
             _marker: PhantomData,
@@ -80,9 +80,9 @@ impl PyStream {
         let id = self.0.idx;
         let mut map = STREAM_REGISTRY.lock().unwrap();
         let stream = map.remove(&id).unwrap();
-        
+
         map.insert(id, stream.min_noir_data(skip_nan).into_box());
-        
+
         PyStream(PyNoirHandle {
             idx: id,
             _marker: PhantomData,
@@ -93,9 +93,9 @@ impl PyStream {
         let id = self.0.idx;
         let mut map = STREAM_REGISTRY.lock().unwrap();
         let stream = map.remove(&id).unwrap();
-        
+
         map.insert(id, stream.max_noir_data(skip_nan).into_box());
-        
+
         PyStream(PyNoirHandle {
             idx: id,
             _marker: PhantomData,
@@ -184,7 +184,7 @@ impl PyStream {
         let id = self.0.idx;
         let mut map = STREAM_REGISTRY.lock().unwrap();
         let stream = map.remove(&id).unwrap();
-        
+
         PyStreamOutput::new(stream.collect_vec())
     }
 }

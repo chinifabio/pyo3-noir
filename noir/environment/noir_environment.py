@@ -3,6 +3,7 @@ from noir.environment.config_environment import EnvironmentConfig
 from noir.source.csv_source import CsvSource
 from noir.source.iterator_source import IteratorSource
 from noir.stream.noir_stream import Stream
+from noir.stream.opt_stream import OptStream
 
 class StreamEnvironment:
     """
@@ -43,6 +44,9 @@ class StreamEnvironment:
             The source from which to read the elements.
         """
         return Stream(self.env.csv_stream(src.inner))
+    
+    def opt_stream(self, path: str):
+        return OptStream(self.env.opt_stream(path))
     
     def execute(self):
         """

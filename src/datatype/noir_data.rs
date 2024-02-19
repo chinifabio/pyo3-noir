@@ -1,4 +1,4 @@
-use noir::data_type::NoirData;
+use noir_compute::data_type::noir_data::NoirData;
 use pyo3::{
     pymethods, types::PyList, AsPyPointer, FromPyObject, IntoPy, PyAny, PyObject, PyResult, Python,
     ToPyObject,
@@ -38,12 +38,10 @@ impl PyNoirData {
     }
 }
 
-
 /**
  * -------------------------------------------------------------------
  * Implementations copied from pyo3 derive macros.
  */
-
 
 impl pyo3::PyClass for PyNoirData {
     type Frozen = pyo3::pyclass::boolean_struct::False;
@@ -148,7 +146,6 @@ unsafe impl pyo3::type_object::PyTypeInfo for PyNoirData {
     }
 }
 
-
 /**
  * ---------------------------------------------------------------------
  * Custom implementations for sending and receiving data from Python.
@@ -177,11 +174,15 @@ impl FromPyObject<'_> for PyNoirData {
         let data = ob.extract::<Vec<PyNoirType>>();
         if data.is_err() {
             let data = ob.extract::<PyNoirType>()?;
-            Ok(PyNoirData(noir::data_type::NoirData::NoirType(data.0)))
+            Ok(PyNoirData(
+                noir_compute::data_type::noir_data::NoirData::NoirType(data.0),
+            ))
         } else {
             let data = data?;
             let row = Vec::from_iter(data.into_iter().map(|x| x.0));
-            Ok(PyNoirData(noir::data_type::NoirData::Row(row)))
+            Ok(PyNoirData(
+                noir_compute::data_type::noir_data::NoirData::Row(row),
+            ))
         }
     }
 }

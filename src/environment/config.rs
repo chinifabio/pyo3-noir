@@ -1,6 +1,6 @@
 use std::path::Path;
 
-use noir::EnvironmentConfig;
+use noir_compute::EnvironmentConfig;
 use pyo3::{pyclass, pymethods};
 
 #[pyclass]

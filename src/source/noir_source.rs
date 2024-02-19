@@ -1,5 +1,5 @@
 use crate::datatype::noir_data::PyNoirData;
-use noir::data_type::NoirData;
+use noir_compute::data_type::noir_data::NoirData;
 use pyo3::{pyclass, pymethods};
 
 #[pyclass]
