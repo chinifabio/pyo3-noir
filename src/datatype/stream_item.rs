@@ -1,5 +1,5 @@
 use noir_compute::data_type::stream_item::StreamItem;
-use pyo3::{pyclass, pymethods};
+use pyo3::{pyclass, pymethods, PyResult};
 
 use super::noir_type::PyNoirType;
 
@@ -19,8 +19,9 @@ impl PyStreamItem {
         format!("{}", self.0)
     }
 
-    fn __str__(&self) -> String {
-        format!("{}", self.0)
+    #[getter]
+    fn __str__(&self) -> PyResult<String> {
+        Ok(format!("{}", self.0))
     }
 
     pub fn len(&self) -> usize {

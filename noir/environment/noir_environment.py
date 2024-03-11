@@ -46,7 +46,21 @@ class StreamEnvironment:
         return Stream(self.env.csv_stream(src.inner))
     
     def opt_stream(self, path: str):
+        """
+        Create an optimizalbe Stream starting from a file.
+
+        Parameters
+        ----------
+        path: str
+            The path to the file from which to read the elements.
+        """
         return OptStream(self.env.opt_stream(path))
+    
+    def spown_remote_workers(self):
+        """
+        If a remote configuration was given, spowns the remote workers.
+        """
+        self.env.spown_remote_workers()
     
     def execute(self):
         """

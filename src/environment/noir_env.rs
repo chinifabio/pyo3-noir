@@ -61,10 +61,14 @@ impl PyStreamEnvironment {
 
     pub fn opt_stream(&mut self, path: &PyString) -> PyOptStream {
         let mut env = ENV_REGISTRY.lock().unwrap().remove(&0).unwrap();
-        let stream = env.stream_csv_optimized(path.to_string());
+        let stream = env.stream_csv_optimized(path.to_string()).infer_schema();
         ENV_REGISTRY.lock().unwrap().insert(0, env);
 
         PyOptStream::new(stream)
+    }
+
+    pub fn spown_remote_workers(&mut self) {
+        ENV_REGISTRY.lock().unwrap()[&0].spawn_remote_workers();
     }
 
     pub fn execute(&mut self, py: Python) {

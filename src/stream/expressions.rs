@@ -1,6 +1,4 @@
-use noir_compute::optimization::dsl::expressions::{
-    binary_expr, lit, max, sum, unary_expr, Expr, UnaryOp,
-};
+use noir_compute::optimization::dsl::expressions::*;
 use noir_compute::prelude::BinaryOp;
 use pyo3::basic::CompareOp;
 use pyo3::prelude::*;
@@ -24,6 +22,10 @@ impl From<Expr> for PyExpr {
 
 #[pymethods]
 impl PyExpr {
+    pub fn __str__(&self) -> String {
+        format!("{}", self.0)
+    }
+
     pub fn __add__(&self, rhs: Self) -> PyResult<Self> {
         Ok(binary_expr(self.0.clone(), BinaryOp::Plus, rhs.0).into())
     }
@@ -114,6 +116,21 @@ pub fn py_sum(expr: PyExpr) -> PyExpr {
 }
 
 #[pyfunction]
+pub fn py_count(expr: PyExpr) -> PyExpr {
+    PyExpr(count(expr.0))
+}
+
+#[pyfunction]
 pub fn py_max(expr: PyExpr) -> PyExpr {
     PyExpr(max(expr.0))
+}
+
+#[pyfunction]
+pub fn py_min(expr: PyExpr) -> PyExpr {
+    PyExpr(min(expr.0))
+}
+
+#[pyfunction]
+pub fn py_avg(expr: PyExpr) -> PyExpr {
+    PyExpr(avg(expr.0))
 }

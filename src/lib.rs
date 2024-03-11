@@ -65,6 +65,9 @@ fn pyo3_noir(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(stream::expressions::py_int_lit, m)?)?;
     m.add_function(wrap_pyfunction!(stream::expressions::py_bool_lit, m)?)?;
     m.add_function(wrap_pyfunction!(stream::expressions::py_sum, m)?)?;
+    m.add_function(wrap_pyfunction!(stream::expressions::py_count, m)?)?;
     m.add_function(wrap_pyfunction!(stream::expressions::py_max, m)?)?;
+    m.add_function(wrap_pyfunction!(stream::expressions::py_min, m)?)?;
+    m.add_function(wrap_pyfunction!(stream::expressions::py_avg, m)?)?;
     Ok(())
 }

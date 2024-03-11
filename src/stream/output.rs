@@ -2,7 +2,7 @@ use noir_compute::{
     data_type::{noir_data::NoirData, stream_item::StreamItem},
     prelude::StreamOutput,
 };
-use pyo3::{pyclass, pymethods};
+use pyo3::{pyclass, pymethods, PyResult};
 
 use crate::{
     datatype::{noir_data::PyNoirData, stream_item::PyStreamItem},
@@ -50,16 +50,17 @@ impl PyOptStreamOutput {
 
 #[pymethods]
 impl PyOptStreamOutput {
-    pub fn get(&mut self) -> Vec<PyStreamItem> {
+    #[getter]
+    pub fn get(&mut self) -> PyResult<Vec<PyStreamItem>> {
         let id = self.0.idx;
         let mut map = OPT_OUT_REGISTRY.lock().unwrap();
         let output = map.remove(&id).unwrap();
 
-        output
+        Ok(output
             .get()
             .unwrap()
             .into_iter()
             .map(PyStreamItem)
-            .collect()
+            .collect())
     }
 }

@@ -1,4 +1,4 @@
-from noir.noir import py_col, py_float_lit, py_int_lit, py_bool_lit, PyExpr, py_sum, py_max
+from noir.noir import py_col, py_float_lit, py_int_lit, py_bool_lit, PyExpr, py_sum, py_count, py_max, py_min, py_avg
 from typing import Union, TypeAlias
 
 PythonLiteral = Union[int, float, bool]
@@ -86,6 +86,18 @@ def sum(expr: Expr) -> Expr:
     expr = into_pyexpr(expr)
     return Expr(py_sum(expr))
 
+def count(expr: Expr) -> Expr:
+    expr = into_pyexpr(expr)
+    return Expr(py_count(expr))
+
 def max(expr: Expr) -> Expr:
     expr = into_pyexpr(expr)
     return Expr(py_max(expr))
+
+def min(expr: Expr) -> Expr:
+    expr = into_pyexpr(expr)
+    return Expr(py_min(expr))
+
+def avg(expr: Expr) -> Expr:
+    expr = into_pyexpr(expr)
+    return Expr(py_avg(expr))
