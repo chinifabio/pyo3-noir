@@ -58,7 +58,7 @@ impl PyOptStreamOutput {
 
         Ok(output
             .get()
-            .unwrap()
+            .unwrap_or_default()
             .into_iter()
             .map(PyStreamItem)
             .collect())
